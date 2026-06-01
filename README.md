@@ -2,9 +2,9 @@
 
 > Self-hosted fitness data aggregator. Sync once, own forever.
 
-![Build Status](https://img.shields.io/github/actions/workflow/status/yourusername/own-your-pace/ci.yml?branch=main&style=flat-square)
-![License](https://img.shields.io/github/license/yourusername/own-your-pace?style=flat-square)
-![Version](https://img.shields.io/github/v/tag/yourusername/own-your-pace?style=flat-square)
+![Build Status](https://img.shields.io/github/actions/workflow/status/farhanhl-ds/own-your-pace/ci.yml?branch=main&style=flat-square)
+![License](https://img.shields.io/github/license/farhanhl-ds/own-your-pace?style=flat-square)
+![Version](https://img.shields.io/github/v/tag/farhanhl-ds/own-your-pace?style=flat-square)
 ![Python](https://img.shields.io/badge/python-3.12-blue?style=flat-square)
 ![Docker](https://img.shields.io/badge/docker-compose-2496ED?style=flat-square&logo=docker&logoColor=white)
 
@@ -42,14 +42,14 @@
 
 **1. Clone the repo**
 ```bash
-git clone https://github.com/yourusername/own-your-pace.git
+git clone https://github.com/farhanhl-ds/own-your-pace.git
 cd own-your-pace
 ```
 
 **2. Copy and fill in environment variables**
 ```bash
 cp .env.example .env
-# Edit .env with your Strava client ID/secret and passwords
+# Edit .env — set your Strava credentials, DB password, and SECRET_KEY
 ```
 
 **3. Start all services**
@@ -78,13 +78,13 @@ docker compose exec api alembic upgrade head
 own-your-pace/
 ├── backend/          # FastAPI application
 │   ├── app/
-│   │   ├── api/      # Route handlers (v1)
-│   │   ├── core/     # Config, auth, dependencies
+│   │   ├── api/v1/   # Route handlers — auth, workouts, metrics, gear, sync
+│   │   ├── core/     # Config, security, dependencies
 │   │   ├── models/   # SQLAlchemy ORM models
-│   │   ├── schemas/  # Pydantic request/response
+│   │   ├── schemas/  # Pydantic request/response contracts
 │   │   ├── services/ # Business logic
 │   │   └── workers/  # Celery background jobs
-│   └── db/           # Migrations (Alembic)
+│   └── db/           # Session, base, Alembic migrations
 ├── frontend/         # React + Vite SPA
 ├── n8n/              # Workflow definitions (JSON)
 ├── nginx/            # Reverse proxy config
@@ -99,8 +99,8 @@ own-your-pace/
 1. Go to [strava.com/settings/api](https://www.strava.com/settings/api) and create an app
 2. Set **Authorization Callback Domain** to your server's domain (or `localhost`)
 3. Copy **Client ID** and **Client Secret** to your `.env`
-4. Open the app, go to **Settings → Integrations → Connect Strava**
-5. Authorize — your activities will start syncing automatically via webhook
+4. Open the app → **Settings → Integrations → Connect Strava**
+5. Authorize — your activities will sync automatically via webhook
 
 ---
 
@@ -119,32 +119,30 @@ own-your-pace/
 Contributions are welcome! Please read [CONTRIBUTING.md](docs/contributing.md) first.
 
 ```bash
-# Set up local dev environment
-make dev-setup
-
-# Run tests
-make test
-
-# Lint
-make lint
+make dev-setup   # install dependencies
+make dev         # start local dev environment
+make test        # run tests
+make lint        # lint and format check
 ```
 
 Commit messages follow [Conventional Commits](https://www.conventionalcommits.org):
-`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`
+`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] Architecture design
-- [x] Database schema
-- [x] Docker Compose setup
-- [ ] FastAPI core + auth
-- [ ] Strava webhook integration
-- [ ] GPX file processing
-- [ ] React dashboard
-- [ ] Personal records tracking
-- [ ] Mobile-responsive UI
+- [x] Architecture design & database schema
+- [x] Docker Compose setup (dev + production)
+- [x] FastAPI core + JWT authentication
+- [x] Project documentation & GitHub setup
+- [ ] Strava OAuth2 + webhook integration
+- [ ] GPX / FIT / TCX file upload & parsing
+- [ ] Celery background workers
+- [ ] Workouts, metrics, gear API endpoints
+- [ ] n8n sync workflows
+- [ ] React dashboard & activity map
+- [ ] Production-ready deployment
 
 ---
 
