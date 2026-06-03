@@ -65,7 +65,7 @@ ignore = ["E501"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 env = [
-    "DATABASE_URL=postgresql+psycopg2://oyp:testpassword@localhost:5432/oyp_test",
+    "DATABASE_URL=postgresql+psycopg2://oyp:testpassword@localhost:5434/oyp_test",
     "REDIS_URL=redis://localhost:6379/0",
     "SECRET_KEY=test-secret-key-for-testing-only-32ch",
 ]
