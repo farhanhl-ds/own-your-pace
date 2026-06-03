@@ -1,0 +1,12 @@
+# Database Migrations
+
+Managed by Alembic. Do not edit migration files manually after they are applied.
+
+To create a new migration:
+    alembic revision --autogenerate -m "describe your change"
+
+To apply migrations:
+    alembic upgrade head
+
+To rollback one step:
+    alembic downgrade -1
