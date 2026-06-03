@@ -117,6 +117,26 @@ own-your-pace/
 - **n8n** communicates with FastAPI via HTTP + internal API key — never direct DB access
 - **Config** always via `core/config.py` (pydantic-settings) — never hardcoded values
 
+### Async Task Boundaries
+Two async systems exist in this stack. Their responsibilities are strictly separated:
+
+| Concern | n8n | Celery |
+|---|---|---|
+| OAuth token refresh (Strava, etc.) | ✅ | ❌ |
+| Scheduled polling external providers | ✅ | ❌ |
+| Strava webhook forwarding | ✅ | ❌ |
+| Payload transform (provider → FastAPI) | ✅ | ❌ |
+| Retry on failed external requests | ✅ | ❌ |
+| Error notifications (email, Telegram) | ✅ | ❌ |
+| GPX/FIT/TCX file parsing | ❌ | ✅ |
+| Route geometry processing | ❌ | ✅ |
+| Batch activity sync (internal) | ❌ | ✅ |
+| User notifications (in-app) | ❌ | ✅ |
+
+**Rule:** n8n owns everything between external providers and FastAPI.
+Celery owns everything triggered from within the system.
+Never add business logic to n8n workflows — transform only, validate in FastAPI.
+
 ### Code Style
 - Type hints on ALL function signatures
 - `Mapped[]` annotations on all SQLAlchemy 2.0 columns
