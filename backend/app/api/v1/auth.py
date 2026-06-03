@@ -1,19 +1,32 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, decode_token
-from app.core.dependencies import get_current_active_user
-from app.models.user import User
-from app.schemas.user import UserRegister, UserResponse
 from jose import JWTError
+from sqlalchemy.orm import Session
+
+from app.core.config import get_settings
+from app.core.dependencies import get_current_active_user
+from app.core.security import (
+    TokenBlocklist,
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+    hash_password,
+    verify_password,
+)
+from app.db.session import get_db
+from app.models.user import User
+from app.schemas.user import UserRegister, UserResponse, RefreshTokenRequest
+
+settings = get_settings()
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: UserRegister, db: Session = Depends(get_db)):
-    # Cek email dan username belum dipakai
+    # Check that email and username are not already taken
     if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
     if db.query(User).filter(User.username == payload.username).first():
@@ -32,7 +45,7 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/login")
 def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    # OAuth2PasswordRequestForm pakai field "username" — kita support login pakai email atau username
+    # OAuth2PasswordRequestForm uses the "username" field — we support login by email or username
     user = (
         db.query(User).filter(User.email == form.username).first()
         or db.query(User).filter(User.username == form.username).first()
@@ -53,14 +66,39 @@ def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     }
 
 
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(request: Request):
+    """Revoke the current access token.
+
+    Extracts the jti from the Authorization header and adds it to the Redis
+    blocklist. The token will be rejected by get_current_user on subsequent requests.
+    Requires a valid Bearer token in the Authorization header.
+    """
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token")
+
+    token = auth_header.split(" ", 1)[1]
+    try:
+        payload = decode_token(token)
+        jti: str | None = payload.get("jti")
+        exp: int | None = payload.get("exp")
+        if jti and exp:
+            expires_at = datetime.fromtimestamp(exp, tz=timezone.utc)
+            TokenBlocklist.revoke(jti, expires_at)
+    except JWTError:
+        # Token already invalid — nothing to revoke
+        pass
+
+
 @router.post("/refresh")
-def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
+def refresh_token(body: RefreshTokenRequest, db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid refresh token",
     )
     try:
-        payload = decode_token(refresh_token)
+        payload = decode_token(body.refresh_token)
         if payload.get("type") != "refresh":
             raise credentials_exception
         user_id: str = payload.get("sub")

@@ -12,16 +12,16 @@ class UserRegister(BaseModel):
     @classmethod
     def username_alphanumeric(cls, v: str) -> str:
         if not v.replace("_", "").replace("-", "").isalnum():
-            raise ValueError("Username hanya boleh huruf, angka, underscore, dan dash")
+            raise ValueError("Username may only contain letters, numbers, underscores, and dashes")
         if len(v) < 3 or len(v) > 50:
-            raise ValueError("Username harus 3-50 karakter")
+            raise ValueError("Username must be between 3 and 50 characters")
         return v.lower()
 
     @field_validator("password")
     @classmethod
     def password_strength(cls, v: str) -> str:
         if len(v) < 8:
-            raise ValueError("Password minimal 8 karakter")
+            raise ValueError("Password must be at least 8 characters")
         return v
 
 
@@ -39,3 +39,7 @@ class UserResponse(BaseModel):
 class UserUpdate(BaseModel):
     timezone: str | None = None
     unit_preference: str | None = None
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

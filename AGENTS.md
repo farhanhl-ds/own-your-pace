@@ -33,7 +33,7 @@ This is NOT a Strava clone, social platform, or fitness coaching app.
 | ORM | SQLAlchemy | 2.0.30 |
 | Migrations | Alembic | 1.13.1 |
 | Database | PostgreSQL | 16 |
-| Time-series | TimescaleDB | pg16-latest |
+| Time-series | TimescaleDB | pg18-latest |
 | Geospatial | PostGIS | bundled with TimescaleDB-HA |
 | Geospatial ORM | GeoAlchemy2 | 0.15.1 |
 | Cache / Queue | Redis | 7 |
