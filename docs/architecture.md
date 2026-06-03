@@ -77,6 +77,29 @@ Reverse proxy and single entry point. Routes:
 
 ---
 
+## Async Task Boundaries
+
+Two async systems exist in this stack. Their responsibilities are strictly separated:
+
+| Concern | n8n | Celery |
+|---|---|---|
+| OAuth token refresh (Strava, etc.) | ✅ | ❌ |
+| Scheduled polling external providers | ✅ | ❌ |
+| Strava webhook forwarding | ✅ | ❌ |
+| Payload transform (provider → FastAPI) | ✅ | ❌ |
+| Retry on failed external requests | ✅ | ❌ |
+| Error notifications (email, Telegram) | ✅ | ❌ |
+| GPX/FIT/TCX file parsing | ❌ | ✅ |
+| Route geometry processing | ❌ | ✅ |
+| Batch activity sync (internal) | ❌ | ✅ |
+| User notifications (in-app) | ❌ | ✅ |
+
+**Rule:** n8n owns everything between external providers and FastAPI.
+Celery owns everything triggered from within the system.
+Never add business logic to n8n workflows — transform only, validate in FastAPI.
+
+---
+
 ## Data Flow
 
 ### Strava Activity Sync (Webhook — primary)
@@ -144,12 +167,19 @@ and GeoJSON serialization. JSON arrays have none of these capabilities.
 **Reason:** Celery supports named queues (gpx, sync, default), retry policies,
 task monitoring, and horizontal scaling. APScheduler is in-process only.
 
-### ADR-006: Huawei Health via Strava bridge
+### ADR-006: n8n owns external, Celery owns internal async
+**Decision:** Strict boundary between n8n and Celery responsibilities.
+**Reason:** n8n is optimized for orchestrating external API interactions —
+OAuth flows, retries, webhooks, and multi-step provider pipelines. Celery is
+optimized for heavy internal computation that shouldn't block HTTP requests.
+Mixing these concerns in either tool makes both harder to debug and maintain.
+
+### ADR-007: Huawei Health via Strava bridge
 **Decision:** No direct Huawei Health API integration.
 **Reason:** Huawei Health Kit is HMS mobile SDK only — not designed for
 server-to-server. Auto-sync Huawei Health → Strava handles this transparently.
 
-### ADR-007: Google Fit dropped from v1 scope
+### ADR-008: Google Fit dropped from v1 scope
 **Decision:** Google Fit REST API not integrated.
 **Reason:** Google Fit API is deprecated as of 2024 and shutting down in 2026.
 New developer registrations closed May 2024. Not worth building against.
