@@ -1,4 +1,4 @@
-# Contributing to FitClone
+# Contributing to OwnYourPace
 
 Thanks for taking the time to contribute! This guide will get you up and running.
 
@@ -10,8 +10,8 @@ Thanks for taking the time to contribute! This guide will get you up and running
 
 ```bash
 # Clone and enter repo
-git clone https://github.com/yourusername/fitclone.git
-cd fitclone
+git clone https://github.com/yourusername/own-your-pace.git
+cd own-your-pace
 
 # Copy env
 cp .env.example .env

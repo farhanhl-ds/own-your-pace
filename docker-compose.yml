@@ -96,7 +96,7 @@ services:
       N8N_BASIC_AUTH_USER: ${N8N_USER:-admin}
       N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD}
       GENERIC_TIMEZONE: ${TIMEZONE:-Asia/Jakarta}
-      # API key untuk hit FastAPI dari n8n
+      # API key used by n8n to authenticate against FastAPI
       OYP_API_URL: http://api:8000
       OYP_API_KEY: ${INTERNAL_API_KEY}
     volumes:
