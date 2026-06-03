@@ -1,4 +1,4 @@
-.PHONY: dev dev-setup test lint migrate logs down
+.PHONY: dev dev-setup test lint migrate logs down requirements
 
 dev:
 	docker compose up -d db redis n8n
@@ -26,3 +26,6 @@ logs:
 
 down:
 	docker compose down
+
+requirements:
+	cd backend && pip-compile pyproject.toml --strip-extras --output-file requirements.txt
