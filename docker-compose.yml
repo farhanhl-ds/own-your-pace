@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - db_data:/home/postgres/pgdata/data
-      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./backend/app/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
@@ -49,7 +49,6 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
     volumes:
       - uploads_data:/app/uploads
-      - ./backend:/app  # hot reload di dev — hapus di prod
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:

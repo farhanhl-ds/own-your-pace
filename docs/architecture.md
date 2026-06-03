@@ -183,3 +183,14 @@ server-to-server. Auto-sync Huawei Health → Strava handles this transparently.
 **Decision:** Google Fit REST API not integrated.
 **Reason:** Google Fit API is deprecated as of 2024 and shutting down in 2026.
 New developer registrations closed May 2024. Not worth building against.
+
+### ADR-009: Sync DB session in Phase 1–3, migrate to async in Phase 4+
+**Decision:** Use synchronous `sqlalchemy.orm.Session` + `psycopg2` for Phase 1–3.
+**Reason:** Sync sessions are simpler to reason about during early development and
+sufficient for a single-user self-hosted deployment. The tradeoff is that blocking
+DB calls run on FastAPI's threadpool, which limits concurrency under load.
+**Migration path (Phase 4+):** Switch to `AsyncSession` + `asyncpg` driver
+(`postgresql+asyncpg://`), update `get_db()` to an async generator, and change all
+route handlers and service functions to `async def`. The `session.py` module is
+the only file that needs structural changes — route and service signatures update
+in place. Do not mix sync and async sessions in the same request.
