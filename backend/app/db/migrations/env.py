@@ -4,19 +4,23 @@ from alembic import context
 from app.core.config import get_settings
 from app.db.base import Base
 
-# Import all models so Alembic can detect schema changes
-import app.models.user  # noqa: F401
+# Import ALL models so Alembic can detect schema changes
+import app.models.user        # noqa: F401
+import app.models.sport       # noqa: F401
+import app.models.sync_source # noqa: F401
+import app.models.workout     # noqa: F401
+import app.models.lap         # noqa: F401
+import app.models.gear        # noqa: F401
+import app.models.metric      # noqa: F401
 
 config = context.config
 settings = get_settings()
 
-# Set database URL from settings, not from alembic.ini
 config.set_main_option("sqlalchemy.url", settings.database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Target metadata for autogenerate
 target_metadata = Base.metadata
 
 
