@@ -23,6 +23,22 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+# PostGIS system tables — exclude from autogenerate
+POSTGIS_TABLES = {
+    "spatial_ref_sys",
+    "geography_columns",
+    "geometry_columns",
+    "raster_columns",
+    "raster_overviews",
+}
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    """Exclude PostGIS system tables from migrations."""
+    if type_ == "table" and name in POSTGIS_TABLES:
+        return False
+    return True
+
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
@@ -31,6 +47,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_object=include_object,
     )
     with context.begin_transaction():
         context.run_migrations()
@@ -46,6 +63,7 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
+            include_object=include_object,
         )
         with context.begin_transaction():
             context.run_migrations()
