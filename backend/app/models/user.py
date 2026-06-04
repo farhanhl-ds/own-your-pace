@@ -24,10 +24,10 @@ class User(Base):
     )
 
     # Relationships
-    workouts: Mapped[list["Workout"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    sync_sources: Mapped[list["SyncSource"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    metrics: Mapped[list["Metric"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    gear: Mapped[list["Gear"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    # workouts: Mapped[list["Workout"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    # sync_sources: Mapped[list["SyncSource"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    # metrics: Mapped[list["Metric"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    # gear: Mapped[list["Gear"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
