@@ -17,17 +17,17 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     timezone: Mapped[str] = mapped_column(String(50), default="UTC")
-    unit_preference: Mapped[str] = mapped_column(String(10), default="metric")  # metric | imperial
+    unit_preference: Mapped[str] = mapped_column(String(10), default="metric")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     # Relationships
-    # workouts: Mapped[list["Workout"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    # sync_sources: Mapped[list["SyncSource"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    # metrics: Mapped[list["Metric"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    # gear: Mapped[list["Gear"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    workouts: Mapped[list["Workout"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    sync_sources: Mapped[list["SyncSource"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    metrics: Mapped[list["Metric"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    gear: Mapped[list["Gear"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
