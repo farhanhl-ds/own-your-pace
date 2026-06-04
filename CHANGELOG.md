@@ -9,6 +9,15 @@ This project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- SQLAlchemy models: Sport, Workout, Lap, SyncSource, Gear, Metric
+- Alembic autogenerate migration covering all Phase 2 tables (single clean migration)
+- Updated `script.py.mako` — added `import geoalchemy2` to migration template
+- Updated `env.py` — PostGIS table exclusion + all model imports
+
+### Fixed
+- GeoAlchemy2 spatial index conflict — set `spatial_index=False` on Geometry columns, let Alembic manage indexes exclusively
+
 ---
 
 ## [0.1.0-alpha] - 2026-06-04
@@ -30,6 +39,7 @@ This project uses [Semantic Versioning](https://semver.org/).
 - Project documentation — README, CONTRIBUTING, architecture, self-hosting guides
 - `CLAUDE.md` — project memory for Claude Code
 - `AGENTS.md` — AI coding agent context for OpenCode, Claude Code, Cursor
+- `docs/development-phases.md` — full phase breakdown with deliverables and definition of done
 
 ### Fixed
 - Pinned `bcrypt==4.0.1` — passlib not compatible with bcrypt 5.x

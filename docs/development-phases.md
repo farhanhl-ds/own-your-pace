@@ -26,7 +26,7 @@ Each phase builds on the previous. Do not start a phase until the previous one i
 - FastAPI project scaffold with layered architecture
 - PostgreSQL 18 + TimescaleDB + PostGIS via Docker Compose
 - SQLAlchemy 2.0 ORM with DeclarativeBase
-- Alembic migration setup + initial `users` table
+- Alembic migration setup
 - JWT authentication — register, login, refresh token, `/me`
 - Pydantic v2 schemas for user contracts
 - Health check endpoint
@@ -49,8 +49,8 @@ Each phase builds on the previous. Do not start a phase until the previous one i
 **Goal:** Get fitness data into the database — both from Strava via webhook and from manual file uploads.
 
 **Deliverables:**
-- SQLAlchemy models: `Workout`, `Sport`, `Lap`, `SyncSource`, `Gear`
-- Alembic migrations for all new tables
+- SQLAlchemy models: `Workout`, `Sport`, `Lap`, `SyncSource`, `Gear`, `Metric`
+- Alembic autogenerate migration for all new tables
 - Strava OAuth2 flow — connect account, store and refresh tokens
 - Strava webhook endpoint — receive and process activity events
 - Manual file upload endpoint — accept GPX, FIT, TCX files
@@ -59,7 +59,8 @@ Each phase builds on the previous. Do not start a phase until the previous one i
 - Deduplication logic via `external_id`
 
 **Definition of Done:**
-- [ ] All new models migrated to database
+- [x] All new models migrated to database
+- [x] Alembic autogenerate working cleanly (no manual migration edits)
 - [ ] User can connect Strava account via OAuth2
 - [ ] New Strava activity triggers webhook → activity saved to DB
 - [ ] User can upload a GPX file → activity parsed and saved to DB
@@ -136,7 +137,6 @@ Each phase builds on the previous. Do not start a phase until the previous one i
 - Restore script (`scripts/restore.sh`)
 - `docs/self-hosting.md` — complete step-by-step deployment guide
 - Health monitoring — basic uptime checks
-- Log aggregation setup
 
 **Definition of Done:**
 - [ ] `docker compose up -d` on a fresh server brings up the full stack
