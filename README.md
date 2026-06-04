@@ -27,7 +27,7 @@
 | Layer | Technology |
 |---|---|
 | Backend | FastAPI (Python 3.12) |
-| Database | PostgreSQL 8 + TimescaleDB + PostGIS |
+| Database | PostgreSQL 18 + TimescaleDB + PostGIS |
 | Cache / Queue | Redis 7 + Celery |
 | Sync | n8n |
 | Frontend | React 18 + Vite |
@@ -107,6 +107,7 @@ own-your-pace/
 ## 📖 Documentation
 
 - [Architecture overview](docs/architecture.md)
+- [Development phases](docs/development-phases.md)
 - [Self-hosting guide](docs/self-hosting.md)
 - [API reference](docs/api-reference.md)
 - [Contributing guide](docs/contributing.md)
@@ -132,17 +133,13 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 
 ## 🗺️ Roadmap
 
-- [x] Architecture design & database schema
-- [x] Docker Compose setup (dev + production)
-- [x] FastAPI core + JWT authentication
-- [x] Project documentation & GitHub setup
-- [ ] Strava OAuth2 + webhook integration
-- [ ] GPX / FIT / TCX file upload & parsing
-- [ ] Celery background workers
-- [ ] Workouts, metrics, gear API endpoints
-- [ ] n8n sync workflows
-- [ ] React dashboard & activity map
-- [ ] Production-ready deployment
+See [docs/development-phases.md](docs/development-phases.md) for full details on each phase.
+
+- [x] Phase 1 — Foundation (auth, DB, core setup)
+- [ ] Phase 2 — Data Ingestion (Strava webhook, file upload, Celery)
+- [ ] Phase 3 — API Layer (workouts, metrics, gear endpoints)
+- [ ] Phase 4 — UI + Orchestration (React dashboard, n8n workflows)
+- [ ] Phase 5 — Production (CI/CD, monitoring, backup)
 
 ---
 
