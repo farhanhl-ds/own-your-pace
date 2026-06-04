@@ -11,11 +11,11 @@ This project uses [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.1.0-alpha] - 2025-06-01
+## [0.1.0-alpha] - 2026-06-04
 
 ### Added
 - FastAPI project scaffold with layered architecture (api, core, models, schemas, services, workers, db)
-- PostgreSQL 16 + TimescaleDB + PostGIS via Docker Compose (dev environment)
+- PostgreSQL 18 + TimescaleDB + PostGIS via Docker Compose (dev environment)
 - SQLAlchemy 2.0 ORM setup with DeclarativeBase
 - Alembic migration: initial users table with UUID PK, timestamps, timezone, unit preference
 - JWT authentication — register, login, refresh token, `/me` endpoints
@@ -28,3 +28,12 @@ This project uses [Semantic Versioning](https://semver.org/).
 - n8n, Nginx, and scripts folder scaffold
 - GitHub Actions CI workflow (lint, test, Docker build)
 - Project documentation — README, CONTRIBUTING, architecture, self-hosting guides
+- `CLAUDE.md` — project memory for Claude Code
+- `AGENTS.md` — AI coding agent context for OpenCode, Claude Code, Cursor
+
+### Fixed
+- Pinned `bcrypt==4.0.1` — passlib not compatible with bcrypt 5.x
+- Changed DB host port to `5434` — port 5432 was already occupied by another PostgreSQL instance on Windows, causing auth failures on all connections to that port
+- Fixed `pyproject.toml` build backend from `setuptools.backends.legacy` to `setuptools.build_meta`
+- Fixed `ALLOWED_ORIGINS` parsing — pydantic-settings requires JSON array format for list fields
+- Commented out unimplemented model relationships (`Workout`, `SyncSource`, `Metric`, `Gear`) to unblock FastAPI startup

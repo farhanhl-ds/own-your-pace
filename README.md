@@ -27,7 +27,7 @@
 | Layer | Technology |
 |---|---|
 | Backend | FastAPI (Python 3.12) |
-| Database | PostgreSQL 16 + TimescaleDB + PostGIS |
+| Database | PostgreSQL 8 + TimescaleDB + PostGIS |
 | Cache / Queue | Redis 7 + Celery |
 | Sync | n8n |
 | Frontend | React 18 + Vite |

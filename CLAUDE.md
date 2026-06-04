@@ -21,7 +21,7 @@ ownership tool.
 | Layer | Technology |
 |---|---|
 | Backend | FastAPI (Python 3.12) |
-| Database | PostgreSQL 16 + TimescaleDB + PostGIS |
+| Database | PostgreSQL 18 + TimescaleDB + PostGIS |
 | Cache / Queue | Redis 7 + Celery |
 | Sync orchestration | n8n |
 | Frontend | React 18 + Vite |

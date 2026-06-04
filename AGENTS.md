@@ -32,14 +32,14 @@ This is NOT a Strava clone, social platform, or fitness coaching app.
 | Language | Python | 3.12 |
 | ORM | SQLAlchemy | 2.0.30 |
 | Migrations | Alembic | 1.13.1 |
-| Database | PostgreSQL | 16 |
-| Time-series | TimescaleDB | pg18-latest |
-| Geospatial | PostGIS | bundled with TimescaleDB-HA |
+| Database | PostgreSQL | 18 |
+| Time-series | TimescaleDB | pg18 (timescaledb-ha) |
+| Geospatial | PostGIS | bundled with timescaledb-ha |
 | Geospatial ORM | GeoAlchemy2 | 0.15.1 |
 | Cache / Queue | Redis | 7 |
 | Background jobs | Celery | 5.4.0 |
 | Sync orchestration | n8n | latest |
-| Auth | python-jose + passlib | JWT / bcrypt |
+| Auth | python-jose + passlib + bcrypt | JWT / bcrypt 4.0.1 |
 | Validation | Pydantic v2 | 2.7.1 |
 | Settings | pydantic-settings | 2.2.1 |
 | Frontend | React 18 + Vite | - |
@@ -66,7 +66,7 @@ own-your-pace/
 │   │   │   ├── dependencies.py ← FastAPI Depends() — get_current_user, get_db
 │   │   │   └── exceptions.py
 │   │   ├── models/         ← SQLAlchemy ORM models ONLY
-│   │   │   ├── user.py
+│   │   │   ├── user.py     ← relationships commented out until Phase 2
 │   │   │   ├── workout.py
 │   │   │   ├── metric.py
 │   │   │   ├── gear.py
@@ -164,13 +164,24 @@ Never add business logic to n8n workflows — transform only, validate in FastAP
 
 ---
 
+## Known Gotchas
+
+- **DB port is `5434`, not `5432`** — port 5432 is occupied by another PostgreSQL instance on this machine. All connections to 5432 get intercepted and auth fails. Always use 5434 for this project.
+- **bcrypt must be pinned to `4.0.1`** — passlib is not compatible with bcrypt 5.x
+- **`ALLOWED_ORIGINS` in `.env`** must be JSON array format: `["http://localhost:5173"]`
+- **Model relationships in `user.py`** are commented out — uncomment as each model is implemented in Phase 2+
+- **conda env name is `oyp`** — activate with `conda activate oyp` before running anything
+- **Always run alembic from `backend/` folder** — `alembic.ini` lives there
+
+---
+
 ## Environment Variables
 
 All config is loaded from `.env` via `backend/app/core/config.py`.
 See `.env.example` for all required variables.
 
 Key variables:
-- `DATABASE_URL` — PostgreSQL connection string
+- `DATABASE_URL` — PostgreSQL connection string, use port `5434` (e.g. `postgresql+psycopg2://oyp:devpassword@127.0.0.1:5434/oyp`)
 - `REDIS_URL` — Redis connection string
 - `SECRET_KEY` — JWT signing key (min 32 chars)
 - `STRAVA_CLIENT_ID` / `STRAVA_CLIENT_SECRET` — Strava OAuth app credentials
@@ -184,34 +195,39 @@ Key variables:
 
 | Phase | Status | Description |
 |---|---|---|
-| Phase 1 | ✅ Done | Foundation — FastAPI, DB, auth |
-| Phase 2 | 🔄 Active | Strava webhook, file upload, Celery |
-| Phase 3 | ⏳ Pending | API layer — workouts, metrics, gear |
+| Phase 1 | ✅ Done | Foundation — FastAPI, DB, auth tested end-to-end |
+| Phase 2 | 🔄 Active | Strava webhook, file upload, Celery workers |
+| Phase 3 | ⏳ Pending | API layer — workouts, metrics, gear endpoints |
 | Phase 4 | ⏳ Pending | React UI + n8n workflows |
-| Phase 5 | ⏳ Pending | Production — CI/CD, monitoring, docs |
+| Phase 5 | ⏳ Pending | Production — CI/CD, monitoring, backup |
 
 ---
 
 ## Running Locally
 
 ```bash
-# Start infrastructure (DB + Redis + n8n)
+# 1. Start infrastructure from project root
 docker compose -f docker-compose.dev.yml up -d
 
-# Backend
+# 2. Activate conda environment
+conda activate oyp
+
+# 3. Install dependencies (first time only)
 cd backend
-python -m venv .venv && source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 pip install -e ".[dev]"
+
+# 4. Run migrations
 alembic upgrade head
+
+# 5. Start FastAPI
 uvicorn app.main:app --reload
 
-# API docs available at:
-# http://localhost:8000/api/docs
+# API docs: http://localhost:8000/api/docs
 ```
 
 ---
 
-## Key Contacts & References
+## Key References
 
 - Strava API docs: https://developers.strava.com/docs/reference/
 - TimescaleDB docs: https://docs.timescale.com
